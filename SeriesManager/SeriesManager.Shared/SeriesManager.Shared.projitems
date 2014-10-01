@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>3deecd49-9a9b-4bc8-a860-97a200ea63f1</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>SeriesManager</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="$(MSBuildThisFileDirectory)App.xaml">
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\FlyoutAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\FocusAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\GridViewHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\NullableChangePropertyAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\OrientationBehavior.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\PopupBehavior.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\ResourceHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\TypeConverterHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\VisualTreeHelperExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\AutoRotatingGridView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DesignViewModels\BannerDesignViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DesignViewModels\FavoriteItemDesignViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DesignViewModels\MainPageDesignViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DesignViewModels\SearchItemDesignViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DesignViewModels\SearchPageDesignViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DesignViewModels\SettingsControlDesignViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SplashOptimiizedMvvmAppBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SplashPage.xaml.cs">
+      <DependentUpon>SplashPage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)SplashPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Themes\ColorThemes.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\de\Resources.resw" />
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\en\Resources.resw" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,11 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SeriesManager.Themes">
+
+    <Color x:Key="SeriesManagerColor">#A30707</Color>
+    <Color x:Key="SeriesManagerLightColor">#CC0707</Color>
+    
+    <SolidColorBrush Color="{StaticResource SeriesManagerColor}" x:Key="SeriesManagerColorBrush" />
+    
+</ResourceDictionary>

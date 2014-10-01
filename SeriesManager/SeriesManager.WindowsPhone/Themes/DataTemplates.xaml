@@ -1,0 +1,77 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:behaviors="using:SeriesManager.Behaviors">
+    
+    <ControlTemplate TargetType="Frame" 
+                     x:Key="FrameControlTemplate">
+        <Page>            
+            <Grid>
+                <Grid.Background>
+                    <ImageBrush ImageSource="{Binding Background, Mode=OneWay}" 
+                                Opacity="0.55" 
+                                Stretch="UniformToFill" />
+                </Grid.Background>
+
+                <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" 
+                                  ContentTransitions="{TemplateBinding ContentTransitions}" 
+                                  Content="{TemplateBinding Content}" 
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                  Margin="{TemplateBinding Padding}" 
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+            </Grid>
+        </Page>
+    </ControlTemplate>
+    
+    <DataTemplate x:Key="SearchItemDataTemplate">
+		<StackPanel Background="Black">
+			<Grid>            
+				<Image DataContext="{Binding Banner, Mode=OneWay}" 
+                       Source="{Binding Image, Mode=OneWay, TargetNullValue=/Assets/SearchLogo.png}" />
+            
+                <Viewbox StretchDirection="DownOnly"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Top"
+                         Visibility="{Binding IsFavorite, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+				    <Grid VerticalAlignment="Top">
+                        <Polygon Points="0,0 90,0 90,90" 
+                                 Fill="{StaticResource SeriesManagerColorBrush}" />
+                        <TextBlock Style="{StaticResource TitleTextBlockStyle}"
+                                   FontFamily="Segoe UI Symbol"
+                                   Text="&#xE1CF;"
+                                   FontSize="16.667">
+            			    <TextBlock.Projection>
+            				    <PlaneProjection GlobalOffsetX="50" 
+                                                 GlobalOffsetY="15"/>
+            			    </TextBlock.Projection>
+					    </TextBlock>
+				    </Grid>
+                </Viewbox>
+            </Grid>
+            
+			<TextBlock Margin="12" 
+                       Style="{StaticResource TitleTextBlockStyle}" 
+                       Text="{Binding Title, Mode=OneWay}"
+                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
+            
+			<TextBlock Margin="12,0,12,12"
+                       Height="60"
+                       MaxLines="3" 
+                       Style="{StaticResource BodyTextBlockStyle}" 
+                       Text="{Binding Model.Description, Mode=OneWay}" 
+                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
+		</StackPanel>
+    </DataTemplate>
+    
+    <DataTemplate x:Key="FavoriteItemDataTemplate">
+        <Image DataContext="{Binding Poster, Mode=OneWay}"
+               Source="{Binding Image, Mode=OneWay, TargetNullValue=/Assets/Logo.png}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="FavoriteItemDataTemplateMinimal">
+        <Image DataContext="{Binding Banner, Mode=OneWay}"
+               Source="{Binding Image, Mode=OneWay, TargetNullValue=/Assets/Logo.png}" />
+    </DataTemplate>
+</ResourceDictionary>

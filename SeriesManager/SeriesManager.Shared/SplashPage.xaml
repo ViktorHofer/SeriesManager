@@ -1,0 +1,21 @@
+﻿<Page
+    x:Class="SeriesManager.SplashPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Canvas Background="{StaticResource SeriesManagerColorBrush}">
+        <Image x:Name="splashImage" 
+            Source="/Assets/SplashScreen.png" 
+            Stretch="None" 
+            Canvas.Left="350" 
+            Canvas.Top="250" />
+        
+        <ProgressRing x:Name="progressRing" 
+            Foreground="White" 
+            Height="50" 
+            Width="50" 
+            IsActive="True" 
+            Canvas.Left="650" 
+            Canvas.Top="550" />
+    </Canvas>
+</Page>

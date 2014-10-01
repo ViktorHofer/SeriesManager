@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
+  <Identity Name="ViktorHofer.64b5c55f-722e-4a2a-8c03-8841cda4dff1" Publisher="CN=Viktor" Version="1.0.0.0" />
+  <Properties>
+    <DisplayName>SeriesManager.Windows</DisplayName>
+    <PublisherDisplayName>Viktor Hofer</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.3.0</OSMinVersion>
+    <OSMaxVersionTested>6.3.0</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="SeriesManager.Windows.App">
+      <m2:VisualElements DisplayName="SeriesManager" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png" Description="SeriesManager" ForegroundText="light" BackgroundColor="#A30707" ToastCapable="true">
+        <m2:DefaultTile ShortName="Series Manager" DefaultSize="square150x150Logo" Wide310x150Logo="Assets\Wide310x150Logo.png" Square70x70Logo="Assets\Square70x70Logo.png">
+          <m2:ShowNameOnTiles>
+            <m2:ShowOn Tile="square150x150Logo" />
+            <m2:ShowOn Tile="wide310x150Logo" />
+          </m2:ShowNameOnTiles>
+        </m2:DefaultTile>
+        <m2:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#A30707" />
+        <m2:InitialRotationPreference>
+          <m2:Rotation Preference="portrait" />
+          <m2:Rotation Preference="landscape" />
+          <m2:Rotation Preference="portraitFlipped" />
+          <m2:Rotation Preference="landscapeFlipped" />
+        </m2:InitialRotationPreference>
+        <m2:ApplicationView MinWidth="width320" />
+      </m2:VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+  </Capabilities>
+</Package>

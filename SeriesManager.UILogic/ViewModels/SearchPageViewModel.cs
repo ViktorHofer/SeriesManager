@@ -1,4 +1,5 @@
 ﻿using System;
+using MetroLog;
 using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.Mvvm;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
@@ -15,18 +16,25 @@ using Windows.UI.Xaml.Navigation;
 
 namespace SeriesManager.UILogic.ViewModels
 {
-    public partial class SearchPageViewModel : ViewModel
+    public class SearchPageViewModel : ViewModel
     {
+        #region Fields
+
         private const string SelectedItemKey = "SelectedItem";
         private readonly ISeriesRepository _seriesRepository;
         private readonly SearchItemViewModelFactory _searchItemViewModelFactory;
         private readonly IAlertMessageService _alertMessageService;
         private readonly IResourceLoader _resourceLoader;
         private readonly ISettingsService _settingsService;
+        private readonly ILogger _logger;
         private string _searchQuery;
         private IReadOnlyCollection<SearchItemViewModel> _searchResult;
         private bool _isLoading;
         private SearchItemViewModel _selectedItem;
+
+        #endregion
+
+        #region Properties
 
         public SearchItemViewModel SelectedItem
         {
@@ -56,20 +64,28 @@ namespace SeriesManager.UILogic.ViewModels
             private set { base.SetProperty(ref _isLoading, value); }
         }
 
+        #endregion
+
+        #region Commands
+
         public DelegateCommand FavoriteCommand { get; private set; }
+
+        #endregion
 
         #region Constructor
 
         protected SearchPageViewModel()
         {
-            FavoriteCommand = DelegateCommand.FromAsyncHandler(OnFavoriteExecuted, OnFavoriteCanExecute);
+            FavoriteCommand = DelegateCommand.FromAsyncHandler(OnFavoriteExecuted,
+                () => _selectedItem != null);
         }
 
         public SearchPageViewModel(ISeriesRepository seriesRepository, 
             SearchItemViewModelFactory searchItemViewModelFactory,
             IAlertMessageService alertMessageService,
             IResourceLoader resourceLoader,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            ILogManager logManager)
             : this()
         {
             if (seriesRepository == null) throw new ArgumentNullException("seriesRepository");
@@ -83,14 +99,15 @@ namespace SeriesManager.UILogic.ViewModels
             _alertMessageService = alertMessageService;
             _resourceLoader = resourceLoader;
             _settingsService = settingsService;
+            _logger = logManager.GetLogger<SearchPageViewModel>();
 
             _seriesRepository.FavoriteCollectionChanged += (s, e) =>
             {
                 if (e.RemovedSeriesCollection == null) return;
 
-                foreach (var series in e.RemovedSeriesCollection)
+                foreach (var searchItemVm in 
+                    e.RemovedSeriesCollection.Select(series => SearchResult.FirstOrDefault(searchVm => searchVm.Model.Equals(series))))
                 {
-                    var searchItemVm = SearchResult.FirstOrDefault(searchVm => searchVm.Model.Equals(series));
                     if (searchItemVm == null) return;
                     searchItemVm.IsFavorite = false;
                 }
@@ -114,9 +131,63 @@ namespace SeriesManager.UILogic.ViewModels
             await _seriesRepository.ChangeFavoriteAsync(selectedItem.Model, selectedItem.IsFavorite);
         }
 
-        private bool OnFavoriteCanExecute()
+        private async Task OnSearchExecuted(string searchQuery)
         {
-            return _selectedItem != null;
+            if (searchQuery == null) throw new ArgumentNullException("searchQuery");
+
+            SearchQuery = searchQuery;
+            SearchResult = null;
+
+            IsLoading = true;
+            IReadOnlyCollection<Series> seriesCollection;
+
+            try
+            {
+                seriesCollection = await _seriesRepository.SearchAsync(SearchQuery);
+            }
+            catch (ParseException exception)
+            {
+                // ReSharper disable once UnusedVariable
+                var x = _alertMessageService.ShowAsync(_resourceLoader.GetString("ParseExceptionMessage"), _resourceLoader.GetString("ParseExceptionTitle"));
+                _logger.Error(string.Format("Parse error while searching for {0}", SearchQuery), exception);
+                return;
+            }
+            catch (BadResponseException exception)
+            {
+                // ReSharper disable once UnusedVariable
+                var x = _alertMessageService.ShowAsync(_resourceLoader.GetString("BadResponseMessage"), _resourceLoader.GetString("BadResponseTitle"));
+                _logger.Error(string.Format("BadResponse while searching for {0}", SearchQuery), exception);
+                return;
+            }
+            catch (ServerNotAvailableException exception)
+            {
+                // ReSharper disable once UnusedVariable
+                var x = _alertMessageService.ShowAsync(_resourceLoader.GetString("ServerNotAvailableMessage"), _resourceLoader.GetString("ServerNotAvailableTitle"));
+                _logger.Error(string.Format("ServerNotAvailable while searching for {0}", SearchQuery), exception);
+                return;
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+
+            var searchResult = new List<SearchItemViewModel>(seriesCollection.Count);
+            var hideNonImageSearchResults = _settingsService.HideNonImageSearchResults;
+            foreach (var series in seriesCollection)
+            {
+                // If search results without images should be hidden and the series does not have an image skip it
+                if (hideNonImageSearchResults && string.IsNullOrWhiteSpace(series.BannerRemotePath)) continue;
+
+                // Check if series already is an favorite
+                var isFavorite = await _seriesRepository.IsFavoriteAsync(series.Id);
+
+                searchResult.Add(_searchItemViewModelFactory.Create(series, isFavorite));
+            }
+            SearchResult = searchResult;
+
+            // Load search result images
+            var tasks = _searchResult.Select(vm => Task.Run(async () => await vm.LoadImage()));
+            await Task.WhenAll(tasks);
         }
 
         #endregion
@@ -130,9 +201,9 @@ namespace SeriesManager.UILogic.ViewModels
             _settingsService.PropertyChanged += settingsService_PropertyChanged;
 
             var searchQuery = navigationParameter as string;
-            if (!string.Equals(SearchQuery, searchQuery, StringComparison.OrdinalIgnoreCase) || navigationMode == NavigationMode.Refresh)
+            if (!string.IsNullOrWhiteSpace(searchQuery) && (!string.Equals(SearchQuery, searchQuery, StringComparison.OrdinalIgnoreCase) || navigationMode == NavigationMode.Refresh))
             {
-                await Search(searchQuery);
+                await OnSearchExecuted(searchQuery);
 
                 // Restore selected series
                 object selectedItemId;
@@ -165,60 +236,12 @@ namespace SeriesManager.UILogic.ViewModels
 
         #endregion
 
-        private async Task Search(string searchQuery)
-        {
-            if (string.IsNullOrWhiteSpace(searchQuery)) return;
-
-            SearchQuery = searchQuery;
-            SearchResult = null;
-
-            IsLoading = true;
-            IReadOnlyCollection<Series> seriesCollection;
-
-            try
-            {
-                seriesCollection = await _seriesRepository.SearchAsync(SearchQuery);
-            }
-            catch (BadResponseException)
-            {
-                var x = _alertMessageService.ShowAsync(_resourceLoader.GetString("BadResponseMessage"), _resourceLoader.GetString("BadResponseTitle"));
-                return;
-            }
-            catch (ServerNotAvailableException)
-            {
-                var x = _alertMessageService.ShowAsync(_resourceLoader.GetString("ServerNotAvailableMessage"), _resourceLoader.GetString("ServerNotAvailableTitle"));
-                return;
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-
-            var searchResult = new List<SearchItemViewModel>(seriesCollection.Count);
-            var hideNonImageSearchResults = _settingsService.HideNonImageSearchResults;
-            foreach (var series in seriesCollection)
-            {
-                // If search results without images should be hidden and the series does not have an image skip it
-                if (hideNonImageSearchResults && string.IsNullOrWhiteSpace(series.BannerRemotePath)) continue;
-
-                // Check if series already is an favorite
-                var isFavorite = await _seriesRepository.IsFavoriteAsync(series.Id);
-
-                searchResult.Add(_searchItemViewModelFactory.Create(series, isFavorite));
-            }
-            SearchResult = searchResult;
-
-            // Load search result images
-            var tasks = _searchResult.Select(vm => Task.Run(async () => await vm.LoadImage()));
-            await Task.WhenAll(tasks);
-        }
-
         private async void settingsService_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             // If search cannot perform again return
             if (string.IsNullOrWhiteSpace(_searchQuery)) return;
 
-            await Search(_searchQuery);
+            await OnSearchExecuted(_searchQuery);
         }
     }
 }

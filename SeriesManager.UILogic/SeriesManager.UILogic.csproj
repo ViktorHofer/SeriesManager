@@ -98,7 +98,7 @@
       <HintPath>..\packages\Microsoft.Net.Http.2.2.28\lib\portable-net45+win8+wpa81\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="TheTVDBSharp">
-      <HintPath>..\packages\TheTVDBSharp.1.0.5380.31883\lib\portable-net45+win+wpa81+wp80\TheTVDBSharp.dll</HintPath>
+      <HintPath>..\packages\TheTVDBSharp.1.0.5389.19137\lib\portable-net45+win+wpa81+wp80\TheTVDBSharp.dll</HintPath>
     </Reference>
     <Reference Include="UniRock">
       <HintPath>..\packages\UniRock.2.0.5371.38967\lib\portable-win81+wpa81\UniRock.dll</HintPath>

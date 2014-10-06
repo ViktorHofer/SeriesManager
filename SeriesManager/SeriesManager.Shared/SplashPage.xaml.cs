@@ -4,18 +4,18 @@ using Windows.UI.Xaml.Controls;
 
 namespace SeriesManager
 {
-    public sealed partial class SplashPage : Page
+    public sealed partial class SplashPage
     {
-        private readonly SplashScreen splashScreen;
+        private readonly SplashScreen _splashScreen;
 
         public SplashPage(SplashScreen splashScreen)
         {
-            this.splashScreen = splashScreen;
+            _splashScreen = splashScreen;
 
-            this.InitializeComponent();
+            InitializeComponent();
 
-            this.SizeChanged += ExtendedSplashScreen_SizeChanged;
-            this.splashImage.ImageOpened += splashImage_ImageOpened;
+            SizeChanged += ExtendedSplashScreen_SizeChanged;
+            splashImage.ImageOpened += splashImage_ImageOpened;
         }
 
         void splashImage_ImageOpened(object sender, RoutedEventArgs e)
@@ -32,25 +32,25 @@ namespace SeriesManager
         // Whenever the size of the application change, the image position and size need to be recalculated.
         void ExtendedSplashScreen_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            this.Resize();
+            Resize();
         }
 
         // This method is used to position and resizing the splash screen image correctly.
         private void Resize()
         {
-            if (this.splashScreen == null) return;
+            if (_splashScreen == null) return;
 
             // The splash image's not always perfectly centered. Therefore we need to set our image's position 
             // to match the original one to obtain a clean transition between both splash screens.
 
-            this.splashImage.Height = this.splashScreen.ImageLocation.Height;
-            this.splashImage.Width = this.splashScreen.ImageLocation.Width;
+            splashImage.Height = _splashScreen.ImageLocation.Height;
+            splashImage.Width = _splashScreen.ImageLocation.Width;
 
-            this.splashImage.SetValue(Canvas.TopProperty, this.splashScreen.ImageLocation.Top);
-            this.splashImage.SetValue(Canvas.LeftProperty, this.splashScreen.ImageLocation.Left);
+            splashImage.SetValue(Canvas.TopProperty, _splashScreen.ImageLocation.Top);
+            splashImage.SetValue(Canvas.LeftProperty, _splashScreen.ImageLocation.Left);
 
-            this.progressRing.SetValue(Canvas.TopProperty, this.splashScreen.ImageLocation.Top + this.splashScreen.ImageLocation.Height + 50);
-            this.progressRing.SetValue(Canvas.LeftProperty, this.splashScreen.ImageLocation.Left + this.splashScreen.ImageLocation.Width / 2 - this.progressRing.Width / 2);
+            progressRing.SetValue(Canvas.TopProperty, _splashScreen.ImageLocation.Top + _splashScreen.ImageLocation.Height + 50);
+            progressRing.SetValue(Canvas.LeftProperty, _splashScreen.ImageLocation.Left + _splashScreen.ImageLocation.Width / 2 - progressRing.Width / 2);
         }
     }
 }

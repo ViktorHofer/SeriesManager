@@ -179,9 +179,9 @@
     <Reference Include="System.Net.Http.Primitives">
       <HintPath>..\..\packages\Microsoft.Net.Http.2.2.28\lib\win8\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="TheTVDBSharp, Version=1.0.5380.31883, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TheTVDBSharp, Version=1.0.5389.19137, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\TheTVDBSharp.1.0.5380.31883\lib\portable-net45+win+wpa81+wp80\TheTVDBSharp.dll</HintPath>
+      <HintPath>..\..\packages\TheTVDBSharp.1.0.5389.19137\lib\portable-net45+win+wpa81+wp80\TheTVDBSharp.dll</HintPath>
     </Reference>
     <Reference Include="UniRock, Version=2.0.5371.39092, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

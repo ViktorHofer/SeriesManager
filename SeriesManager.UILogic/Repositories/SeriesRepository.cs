@@ -14,14 +14,14 @@ namespace SeriesManager.UILogic.Repositories
     public class SeriesRepository : ISeriesRepository
     {
         private readonly IStorageService _storageService;
-        private readonly ITheTVDBManager _theTvdbManager;
+        private readonly ITheTvdbManager _theTvdbManager;
         private readonly ISettingsService _settingsService;
         private HashSet<Series> _favorites;
 
         #region Constructor
 
         public SeriesRepository(IStorageService storageService, 
-            ITheTVDBManager theTvdbManager,
+            ITheTvdbManager theTvdbManager,
             ISettingsService settingsService)
         {
             if (storageService == null) throw new ArgumentNullException("storageService", "StorageService cannot be null");

@@ -8,10 +8,10 @@ namespace SeriesManager.UILogic.Repositories
     public class BannerRepository : IBannerRepository
     {
         private readonly IStorageService _storageService;
-        private readonly ITheTVDBManager _theTvdbManager;
+        private readonly ITheTvdbManager _theTvdbManager;
 
         public BannerRepository(IStorageService storageService, 
-            ITheTVDBManager theTvdbManager)
+            ITheTvdbManager theTvdbManager)
         {
             if (storageService == null) throw new ArgumentNullException("storageService");
             if (theTvdbManager == null) throw new ArgumentNullException("theTvdbManager");

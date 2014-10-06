@@ -25,40 +25,33 @@ using SeriesManager.UILogic.ViewModels.Passive;
 
 namespace SeriesManager
 {
-    public sealed partial class App : SplashOptimizedMvvmAppBase
+    public sealed partial class App
     {
-        private readonly UnityContainer unityContainer = new UnityContainer();
-        private readonly ILogger logger;
+        private readonly UnityContainer _unityContainer = new UnityContainer();
 
         public App()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
-            MetroLog.LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new MetroLog.Targets.FileStreamingTarget());
+            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new MetroLog.Targets.FileStreamingTarget());
             GlobalCrashHandler.Configure();
-            this.logger = LogManagerFactory.DefaultLogManager.GetLogger<App>();
 
-            this.ExtendedSplashScreenFactory = (splash) => new SplashPage(splash);
-        }
-
-        protected override void OnRegisterKnownTypesForSerialization()
-        {
-            base.OnRegisterKnownTypesForSerialization();
+            ExtendedSplashScreenFactory = splash => new SplashPage(splash);
         }
 
         protected override object Resolve(Type type)
         {
-            return this.unityContainer.Resolve(type);
+            return _unityContainer.Resolve(type);
         }
 
 #if WINDOWS_APP
         protected override IList<SettingsCommand> GetSettingsCommands()
         {
             var settingsCommands = new List<SettingsCommand>();
-            var resourceLoader = this.unityContainer.Resolve<IResourceLoader>();
+            var resourceLoader = _unityContainer.Resolve<IResourceLoader>();
 
             // TODO: Fill list
-            settingsCommands.Add(new SettingsCommand(Guid.NewGuid(), resourceLoader.GetString("SettingsCharm"), (h) => new SeriesManager.Views.SettingsPage().ShowIndependent()));
+            settingsCommands.Add(new SettingsCommand(Guid.NewGuid(), resourceLoader.GetString("SettingsCharm"), h => new Views.SettingsPage().ShowIndependent()));
 
             return settingsCommands;
         }
@@ -66,56 +59,39 @@ namespace SeriesManager
 
         protected override async Task OnInitializeAsync(IActivatedEventArgs args, Frame rootFrame)
         {
-            this.unityContainer.RegisterInstance<INavigationService>(NavigationService, new ContainerControlledLifetimeManager());
-            this.unityContainer.RegisterInstance<ISessionStateService>(SessionStateService, new ContainerControlledLifetimeManager());
-            this.unityContainer.RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager());
-            this.unityContainer.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()), new ContainerControlledLifetimeManager());
-            this.unityContainer.RegisterType<ISettingsService, SettingsService>(new ContainerControlledLifetimeManager());
-            this.unityContainer.RegisterType<IAlertMessageService, AlertMessageService>(new ContainerControlledLifetimeManager());
-            this.unityContainer.RegisterInstance<ILogManager>(LogManagerFactory.DefaultLogManager, new ContainerControlledLifetimeManager());
-
-            // Repositories
-            this.unityContainer.RegisterType<ISeriesRepository, SeriesRepository>(new ContainerControlledLifetimeManager());
-            this.unityContainer.RegisterType<IBannerRepository, BannerRepository>(new ContainerControlledLifetimeManager());
-
-            // Register web service proxies
-            this.unityContainer.RegisterInstance<ITheTVDBManager>(new TheTVDBManager("APIKEY"));
-
-            // Register viewmodels
-            this.unityContainer.RegisterType<SearchPageViewModel>(new ContainerControlledLifetimeManager());
-            this.unityContainer.RegisterType<MainPageViewModel>(new ContainerControlledLifetimeManager());
-            this.unityContainer.RegisterType<SettingsPageViewModel>(new ContainerControlledLifetimeManager());
-
-            // Register factories
-            this.unityContainer.RegisterType<BannerViewModelFactory>(new ContainerControlledLifetimeManager());
-            this.unityContainer.RegisterType<SearchItemViewModelFactory>(new ContainerControlledLifetimeManager());
-            this.unityContainer.RegisterType<FavoriteItemViewModelFactory>(new ContainerControlledLifetimeManager());
-
-            ViewModelLocationProvider.SetDefaultViewTypeToViewModelTypeResolver((viewType) =>
+            ViewModelLocationProvider.SetDefaultViewTypeToViewModelTypeResolver(viewType =>
             {
                 var viewModelTypeName = string.Format(CultureInfo.InvariantCulture, "SeriesManager.UILogic.ViewModels.{0}ViewModel, SeriesManager.UILogic, Version=1.0.0.0, Culture=neutral", viewType.Name);
                 var viewModelType = Type.GetType(viewModelTypeName);
                 return viewModelType;
             });
 
-            // Initialize storage requirements
-            this.unityContainer.RegisterInstance<IStorageService>(await StorageService.Create());
-            await this.unityContainer.Resolve<ISeriesRepository>().LoadFavoritesAsync();
+            // Register core services
+            _unityContainer.RegisterInstance<INavigationService>(NavigationService, new ContainerControlledLifetimeManager())
+                .RegisterInstance<ISessionStateService>(SessionStateService, new ContainerControlledLifetimeManager())
+                .RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager())
+                .RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()), new ContainerControlledLifetimeManager())
+                .RegisterType<ISettingsService, SettingsService>(new ContainerControlledLifetimeManager())
+                .RegisterType<IAlertMessageService, AlertMessageService>(new ContainerControlledLifetimeManager())
+                .RegisterInstance<ILogManager>(LogManagerFactory.DefaultLogManager, new ContainerControlledLifetimeManager())
+                .RegisterType<ISeriesRepository, SeriesRepository>(new ContainerControlledLifetimeManager())
+                .RegisterType<IBannerRepository, BannerRepository>(new ContainerControlledLifetimeManager())
+                .RegisterInstance<ITheTvdbManager>(new TheTvdbManager("<< ENTER API KEY >>"))
+                .RegisterType<SearchPageViewModel>(new ContainerControlledLifetimeManager())
+                .RegisterType<MainPageViewModel>(new ContainerControlledLifetimeManager())
+                .RegisterType<SettingsPageViewModel>(new ContainerControlledLifetimeManager())
+                .RegisterType<BannerViewModelFactory>(new ContainerControlledLifetimeManager())
+                .RegisterType<SearchItemViewModelFactory>(new ContainerControlledLifetimeManager())
+                .RegisterType<FavoriteItemViewModelFactory>(new ContainerControlledLifetimeManager())
+                .RegisterInstance<IStorageService>(await StorageService.Create());
 
-            // Initialize logger
-            this.unityContainer.Resolve<ITheTVDBManager>().Logged += (s, e) =>
-            {
-                if (e.Level == TheTVDBSharp.Services.LogLevel.Error)
-                {
-                    this.logger.Error(e.Message, e.InnerException);
-                }
-            };
+            await _unityContainer.Resolve<ISeriesRepository>().LoadFavoritesAsync();
 
-            var frameVM = this.unityContainer.Resolve<FrameViewModel>();
-            rootFrame.DataContext = frameVM;
+            var frameVm = _unityContainer.Resolve<FrameViewModel>();
+            rootFrame.DataContext = frameVm;
             rootFrame.Template = Resources["FrameControlTemplate"] as ControlTemplate;
             rootFrame.RequestedTheme = Windows.UI.Xaml.ElementTheme.Dark;
-            rootFrame.Navigated += (s, e) => frameVM.NavigationBarIsOpen = false;
+            rootFrame.Navigated += (s, e) => frameVm.NavigationBarIsOpen = false;
         }
 
         protected override Task OnLaunchApplicationAsync(LaunchActivatedEventArgs args)

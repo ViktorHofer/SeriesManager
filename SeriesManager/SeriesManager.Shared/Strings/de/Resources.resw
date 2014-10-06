@@ -153,6 +153,12 @@
   <data name="PackageVersionTitle.Text" xml:space="preserve">
     <value>Paketinformationen</value>
   </data>
+  <data name="ParseExceptionMessage" xml:space="preserve">
+    <value>Während der Verarbeitung der Antwort ist ein Fehler aufgetreten. Bitte kontaktieren Sie den App Entwickler.</value>
+  </data>
+  <data name="ParseExceptionTitle" xml:space="preserve">
+    <value>Server-Antwort Fehler</value>
+  </data>
   <data name="SearchButton.Text" xml:space="preserve">
     <value>Suchen</value>
   </data>

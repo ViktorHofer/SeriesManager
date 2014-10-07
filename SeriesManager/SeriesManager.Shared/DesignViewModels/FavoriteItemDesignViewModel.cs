@@ -1,16 +1,22 @@
-﻿using SeriesManager.UILogic.ViewModels.Passive;
-using TheTVDBSharp.Models;
+﻿using System;
 
 namespace SeriesManager.DesignViewModels
 {
-    class FavoriteItemDesignViewModel : FavoriteItemViewModel
+    class FavoriteItemDesignViewModel
     {
-        public FavoriteItemDesignViewModel(Series series)
-            : base(series)
+        public BannerDesignViewModel Poster { get; private set; }
+
+        public BannerDesignViewModel Banner { get; private set; }
+
+        public bool IsWatched
+        {
+            get { return new Random().Next(0, 1) == 0; }
+        }
+
+        public FavoriteItemDesignViewModel()
         {
             Poster = new BannerDesignViewModel();
             Banner = new BannerDesignViewModel();
-            IsWatched = true;
         }
     }
 }

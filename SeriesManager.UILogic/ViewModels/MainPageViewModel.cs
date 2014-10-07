@@ -12,11 +12,17 @@ namespace SeriesManager.UILogic.ViewModels
 {
     public class MainPageViewModel : ViewModel
     {
+        #region Fields
+
         private const string SelectedItemsKey = "selectedItems";
         private readonly INavigationService _navigationService;
         private readonly ISeriesRepository _seriesRepository;
         private readonly FavoriteItemViewModelFactory _favoriteItemViewModelFactory;
         private bool _isCommandBarOpen;
+
+        #endregion
+
+        #region Properties
 
         public bool IsCommandBarOpen
         {
@@ -24,7 +30,7 @@ namespace SeriesManager.UILogic.ViewModels
             set { base.SetProperty(ref _isCommandBarOpen, value); }
         }
 
-        public ObservableCollection<FavoriteItemViewModel> Favorites { get; protected set; }
+        public ObservableCollection<FavoriteItemViewModel> Favorites { get; private set; }
 
         public ObservableCollection<FavoriteItemViewModel> SelectedItems { get; private set; }
 
@@ -36,10 +42,22 @@ namespace SeriesManager.UILogic.ViewModels
 
         public DelegateCommand SelectAllCommand { get; private set; }
 
+        #endregion
+
         #region Constructor
 
-        protected MainPageViewModel()
+        public MainPageViewModel(INavigationService navigationService,
+            ISeriesRepository seriesRepository,
+            FavoriteItemViewModelFactory favoriteItemViewModelFactory)
         {
+            if (navigationService == null) throw new ArgumentNullException("navigationService");
+            if (seriesRepository == null) throw new ArgumentNullException("seriesRepository");
+            if (favoriteItemViewModelFactory == null) throw new ArgumentNullException("favoriteItemViewModelFactory");
+
+            _navigationService = navigationService;
+            _seriesRepository = seriesRepository;
+            _favoriteItemViewModelFactory = favoriteItemViewModelFactory;
+
             ItemClickCommand = new DelegateCommand<FavoriteItemViewModel>(favoriteVm => _navigationService.Navigate("Series", favoriteVm.Series.Id));
             FavoriteCommand = new DelegateCommand(OnFavoriteExecuted, OnFavoriteCanExecute);
             ClearSelectionCommand = new DelegateCommand(OnClearSelectionExecuted, OnClearSelectionCanExecute);
@@ -53,20 +71,6 @@ namespace SeriesManager.UILogic.ViewModels
                 ClearSelectionCommand.RaiseCanExecuteChanged();
                 SelectAllCommand.RaiseCanExecuteChanged();
             };
-        }
-
-        public MainPageViewModel(INavigationService navigationService,
-            ISeriesRepository seriesRepository,
-            FavoriteItemViewModelFactory favoriteItemViewModelFactory)
-            : this()
-        {
-            if (navigationService == null) throw new ArgumentNullException("navigationService");
-            if (seriesRepository == null) throw new ArgumentNullException("seriesRepository");
-            if (favoriteItemViewModelFactory == null) throw new ArgumentNullException("favoriteItemViewModelFactory");
-
-            _navigationService = navigationService;
-            _seriesRepository = seriesRepository;
-            _favoriteItemViewModelFactory = favoriteItemViewModelFactory;
 
             var favoriteItemViewModels = seriesRepository.Favorites
                 .Select(favoriteItemViewModelFactory.Create)
@@ -78,9 +82,8 @@ namespace SeriesManager.UILogic.ViewModels
             {
                 if (e.RemovedSeriesCollection != null)
                 {
-                    foreach (var series in e.RemovedSeriesCollection)
+                    foreach (var favoriteVm in e.RemovedSeriesCollection.Select(series => Favorites.First(vm => vm.Series.Equals(series))))
                     {
-                        var favoriteVm = Favorites.First(vm => vm.Series.Equals(series));
                         Favorites.Remove(favoriteVm);
                     }
                 }

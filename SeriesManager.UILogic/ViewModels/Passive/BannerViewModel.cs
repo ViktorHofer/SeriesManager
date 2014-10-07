@@ -13,10 +13,16 @@ namespace SeriesManager.UILogic.ViewModels.Passive
 {
     public class BannerViewModel : ViewModel
     {
+        #region Fields
+
         private readonly IBannerRepository _bannerRepository;
         private readonly string _remotePath;
         private readonly SynchronizationContext _syncContext;
         private ImageSource _image;
+
+        #endregion
+
+        #region Properties
 
         public ImageSource Image
         {
@@ -24,16 +30,12 @@ namespace SeriesManager.UILogic.ViewModels.Passive
             private set { base.SetProperty(ref _image, value); }
         }
 
+        #endregion
+
         #region Constructor
-
-        protected BannerViewModel()
-        {
-
-        }
 
         public BannerViewModel(IBannerRepository bannerRepository, 
             string remotePath)
-            : this()
         {
             if (bannerRepository == null) throw new ArgumentNullException("bannerRepository");
 

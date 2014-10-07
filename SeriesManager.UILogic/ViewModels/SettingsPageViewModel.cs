@@ -11,9 +11,15 @@ namespace SeriesManager.UILogic.ViewModels
 {
     public class SettingsPageViewModel : BindableBase, IFlyoutViewModel
     {
+        #region Fields
+
         private readonly ISettingsService _settingsService;
         private readonly ISeriesRepository _seriesRepository;
         private bool _isSeriesLanguagesUpdating;
+
+        #endregion
+
+        #region Fields
 
         public string AppVersion
         {
@@ -46,6 +52,8 @@ namespace SeriesManager.UILogic.ViewModels
             get { return _isSeriesLanguagesUpdating; }
             set { base.SetProperty(ref _isSeriesLanguagesUpdating, value); }
         }
+
+        #endregion
 
         #region Constructor
 

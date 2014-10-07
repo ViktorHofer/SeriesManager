@@ -8,9 +8,15 @@ namespace SeriesManager.UILogic.ViewModels
 {
     public class FrameViewModel : ViewModel
     {
+        #region Fields
+
         private readonly INavigationService _navigationService;
         private bool _navigationBarIsOpen;
         private ImageSource _background;
+
+        #endregion
+
+        #region Properties
 
         public bool NavigationBarIsOpen
         {
@@ -28,6 +34,10 @@ namespace SeriesManager.UILogic.ViewModels
 
         public DelegateCommand<string> SearchCommand { get; private set; }
 
+        #endregion
+
+        #region Constructor
+
         public FrameViewModel(INavigationService navigationService)
         {
             if (navigationService == null) throw new ArgumentNullException("navigationService");
@@ -37,5 +47,7 @@ namespace SeriesManager.UILogic.ViewModels
             HomeCommand = new DelegateCommand(() => _navigationService.Navigate("Main", null));
             SearchCommand = new DelegateCommand<string>(searchQuery => _navigationService.Navigate("Search", searchQuery));
         }
+
+        #endregion
     }
 }

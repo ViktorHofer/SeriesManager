@@ -1,12 +1,14 @@
-﻿using SeriesManager.UILogic.ViewModels.Passive;
+﻿using Windows.UI.Xaml.Media;
 
 namespace SeriesManager.DesignViewModels
 {
-    class BannerDesignViewModel : BannerViewModel
+    class BannerDesignViewModel
     {
+        public ImageSource Image { get; private set; }
+
         public BannerDesignViewModel()
-            : base()
         {
+            Image = null;
         }
     }
 }

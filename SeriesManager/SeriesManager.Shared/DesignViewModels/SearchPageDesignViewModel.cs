@@ -1,18 +1,29 @@
-﻿using SeriesManager.UILogic.ViewModels;
+﻿using System.Collections.Generic;
 using System;
 using System.Linq;
 using TheTVDBSharp.Models;
 
 namespace SeriesManager.DesignViewModels
 {
-    class SearchPageDesignViewModel : SearchPageViewModel
+    class SearchPageDesignViewModel
     {
-        public SearchPageDesignViewModel()
-            : base()
-        {
-            SearchQuery = "Scrubs";
+        public SearchItemDesignViewModel SelectedItem { get; private set; }
 
-            var seriesCollection = new Series[] 
+        public IReadOnlyCollection<SearchItemDesignViewModel> SearchResult { get; private set; }
+
+        public string SearchQuery
+        {
+            get { return "Scrubs"; }
+        }
+
+        public bool IsLoading
+        {
+            get { return true; }
+        }
+
+        public SearchPageDesignViewModel()
+        {
+            var seriesCollection = new[] 
                 {
                     new Series(76156) 
                     {
@@ -39,6 +50,7 @@ namespace SeriesManager.DesignViewModels
             SearchResult = seriesCollection
                 .Select(series => new SearchItemDesignViewModel(series))
                 .ToArray();
+            SelectedItem = SearchResult.First();
         }
     }
 }

@@ -7,11 +7,17 @@ namespace SeriesManager.UILogic.ViewModels.Passive
 {
     public class SearchItemViewModel : ViewModel
     {
+        #region Fields
+
         private bool _isFavorite;
+
+        #endregion
+
+        #region Properties
 
         public Series Model { get; private set; }
 
-        public BannerViewModel Banner { get; protected set; }
+        public BannerViewModel Banner { get; private set; }
 
         public string Title
         {
@@ -33,24 +39,20 @@ namespace SeriesManager.UILogic.ViewModels.Passive
             internal set { base.SetProperty(ref _isFavorite, value); }
         }
 
+        #endregion
+
         #region Constructor
-
-        protected SearchItemViewModel(Series model, bool isFavorite)
-        {
-            if (model == null) throw new ArgumentNullException("model");
-
-            Model = model;
-            _isFavorite = isFavorite;
-        }
 
         public SearchItemViewModel(
             BannerViewModelFactory bannerViewModelFactory, 
             Series model, 
             bool isFavorite)
-            : this(model, isFavorite)
         {
             if (bannerViewModelFactory == null) throw new ArgumentNullException("bannerViewModelFactory");
+            if (model == null) throw new ArgumentNullException("model");
 
+            Model = model;
+            _isFavorite = isFavorite;
             Banner = bannerViewModelFactory.Create(model.BannerRemotePath);
         }
 

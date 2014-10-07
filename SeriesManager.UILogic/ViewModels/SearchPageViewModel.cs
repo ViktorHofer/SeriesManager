@@ -49,13 +49,13 @@ namespace SeriesManager.UILogic.ViewModels
         public IReadOnlyCollection<SearchItemViewModel> SearchResult
         {
             get { return _searchResult; }
-            protected set { base.SetProperty(ref _searchResult, value); }
+            private set { base.SetProperty(ref _searchResult, value); }
         }
 
         public string SearchQuery 
         {
             get { return _searchQuery; }
-            protected set { base.SetProperty(ref _searchQuery, value); }
+            private set { base.SetProperty(ref _searchQuery, value); }
         }
 
         public bool IsLoading
@@ -74,19 +74,12 @@ namespace SeriesManager.UILogic.ViewModels
 
         #region Constructor
 
-        protected SearchPageViewModel()
-        {
-            FavoriteCommand = DelegateCommand.FromAsyncHandler(OnFavoriteExecuted,
-                () => _selectedItem != null);
-        }
-
         public SearchPageViewModel(ISeriesRepository seriesRepository, 
             SearchItemViewModelFactory searchItemViewModelFactory,
             IAlertMessageService alertMessageService,
             IResourceLoader resourceLoader,
             ISettingsService settingsService,
             ILogManager logManager)
-            : this()
         {
             if (seriesRepository == null) throw new ArgumentNullException("seriesRepository");
             if (searchItemViewModelFactory == null) throw new ArgumentNullException("searchItemViewModelFactory");
@@ -100,6 +93,9 @@ namespace SeriesManager.UILogic.ViewModels
             _resourceLoader = resourceLoader;
             _settingsService = settingsService;
             _logger = logManager.GetLogger<SearchPageViewModel>();
+
+            FavoriteCommand = DelegateCommand.FromAsyncHandler(OnFavoriteExecuted, 
+                () => _selectedItem != null);
 
             _seriesRepository.FavoriteCollectionChanged += (s, e) =>
             {

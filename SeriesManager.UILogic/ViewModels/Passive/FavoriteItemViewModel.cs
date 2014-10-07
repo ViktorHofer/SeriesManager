@@ -6,30 +6,33 @@ namespace SeriesManager.UILogic.ViewModels.Passive
 {
     public class FavoriteItemViewModel
     {
+        #region Fields
+
         internal readonly Series Series;
 
-        public BannerViewModel Poster { get; protected set; }
+        #endregion
 
-        public BannerViewModel Banner { get; protected set; }
+        #region Properties
 
-        public bool IsWatched { get; protected set; }
+        public BannerViewModel Poster { get; private set; }
+
+        public BannerViewModel Banner { get; private set; }
+
+        // TODO: set watched state
+        public bool IsWatched { get; private set; }
+
+        #endregion
 
         #region Constructor
-
-        protected FavoriteItemViewModel(Series series)
-        {
-            if (series == null) throw new ArgumentNullException("series");
-
-            Series = series;
-        }
 
         public FavoriteItemViewModel(
             BannerViewModelFactory bannerViewModelFactory,
             Series series)
-            : this(series)
         {
             if (bannerViewModelFactory == null) throw new ArgumentNullException("bannerViewModelFactory");
+            if (series == null) throw new ArgumentNullException("series");
 
+            Series = series;
             Poster = bannerViewModelFactory.Create(series.PosterRemotePath);
             Banner = bannerViewModelFactory.Create(series.BannerRemotePath);
         }

@@ -1,30 +1,29 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Activation;
-#if WINDOWS_APP
-using Windows.UI.ApplicationSettings;
-#endif
 using Windows.ApplicationModel;
+using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.ApplicationModel.Resources;
-using Microsoft.Practices.Prism.StoreApps;
+using Microsoft.Practices.Prism.Mvvm;
 using Microsoft.Practices.Prism.Mvvm.Interfaces;
+using Microsoft.Practices.Prism.StoreApps;
+
 #if WINDOWS_PHONE_APP
  using Windows.Phone.UI.Input;
 #endif
 
-namespace Microsoft.Practices.Prism.Mvvm
+#if WINDOWS_APP
+using System.Collections.Generic;
+using Windows.UI.ApplicationSettings;
+#endif
+
+namespace SeriesManager
 {
-
-
     public abstract class SplashOptimizedMvvmAppBase : Application
     {
         private bool _isRestoringFromTermination;
@@ -35,7 +34,7 @@ namespace Microsoft.Practices.Prism.Mvvm
         /// </summary>
         protected SplashOptimizedMvvmAppBase()
         {
-            this.Suspending += OnSuspending;
+            Suspending += OnSuspending;
         }
 
         /// <summary>
@@ -84,9 +83,9 @@ namespace Microsoft.Practices.Prism.Mvvm
         /// <returns>The type of the page which corresponds to the specified token.</returns>
         protected virtual Type GetPageType(string pageToken)
         {
-            var assemblyQualifiedAppType = this.GetType().GetTypeInfo().AssemblyQualifiedName;
+            var assemblyQualifiedAppType = GetType().GetTypeInfo().AssemblyQualifiedName;
 
-            var pageNameWithParameter = assemblyQualifiedAppType.Replace(this.GetType().FullName, this.GetType().Namespace + ".Views.{0}Page");
+            var pageNameWithParameter = assemblyQualifiedAppType.Replace(GetType().FullName, GetType().Namespace + ".Views.{0}Page");
 
             var viewFullName = string.Format(CultureInfo.InvariantCulture, pageNameWithParameter, pageToken);
             var viewType = Type.GetType(viewFullName);
@@ -95,7 +94,7 @@ namespace Microsoft.Practices.Prism.Mvvm
             {
                 var resourceLoader = ResourceLoader.GetForCurrentView(PrismConstants.StoreAppsInfrastructureResourceMapId);
                 throw new ArgumentException(
-                    string.Format(CultureInfo.InvariantCulture, resourceLoader.GetString("DefaultPageTypeLookupErrorMessage"), pageToken, this.GetType().Namespace + ".Views"),
+                    string.Format(CultureInfo.InvariantCulture, resourceLoader.GetString("DefaultPageTypeLookupErrorMessage"), pageToken, GetType().Namespace + ".Views"),
                     "pageToken");
             }
 
@@ -111,6 +110,7 @@ namespace Microsoft.Practices.Prism.Mvvm
         /// Override this method with the initialization logic of your application. Here you can initialize services, repositories, and so on.
         /// </summary>
         /// <param name="args">The <see cref="IActivatedEventArgs"/> instance containing the event data.</param>
+        /// <param name="frame">The root frame</param>
         protected virtual Task OnInitializeAsync(IActivatedEventArgs args, Frame frame)
         {
             return Task.FromResult<object>(null);
@@ -167,7 +167,7 @@ namespace Microsoft.Practices.Prism.Mvvm
 
                 if (ExtendedSplashScreenFactory != null)
                 {
-                    Page extendedSplashScreen = this.ExtendedSplashScreenFactory.Invoke(args.SplashScreen);
+                    var extendedSplashScreen = ExtendedSplashScreenFactory.Invoke(args.SplashScreen);
                     rootFrame.Content = extendedSplashScreen;
                 }
                 Window.Current.Content = rootFrame;
@@ -281,7 +281,7 @@ namespace Microsoft.Practices.Prism.Mvvm
                 NavigationService.GoBack();
                 e.Handled = true;
             }
-            else this.Exit();
+            else Exit();
         }
 #endif
 #if WINDOWS_APP

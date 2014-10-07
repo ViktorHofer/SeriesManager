@@ -24,6 +24,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Behaviors\ResourceHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Behaviors\TypeConverterHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Behaviors\VisualTreeHelperExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants.Secret.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\AutoRotatingGridView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DesignViewModels\BannerDesignViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DesignViewModels\FavoriteItemDesignViewModel.cs" />

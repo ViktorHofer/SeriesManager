@@ -1,27 +1,27 @@
 ﻿using MetroLog;
 using Microsoft.Practices.Prism.Mvvm;
-using Microsoft.Practices.Prism.Mvvm.Interfaces;
 using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.Practices.Prism.StoreApps;
 using Microsoft.Practices.Prism.StoreApps.Interfaces;
 using Microsoft.Practices.Unity;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using UniRock.Services;
 using UniRock.Services.Interfaces;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Resources;
-#if WINDOWS_APP
-using Windows.UI.ApplicationSettings;
-#endif
 using Windows.UI.Xaml.Controls;
 using SeriesManager.UILogic.Repositories;
 using SeriesManager.UILogic.Services;
 using TheTVDBSharp;
 using SeriesManager.UILogic.ViewModels;
 using SeriesManager.UILogic.ViewModels.Passive;
+
+#if WINDOWS_APP
+using Windows.UI.ApplicationSettings;
+using System.Collections.Generic;
+#endif
 
 namespace SeriesManager
 {
@@ -67,16 +67,16 @@ namespace SeriesManager
             });
 
             // Register core services
-            _unityContainer.RegisterInstance<INavigationService>(NavigationService, new ContainerControlledLifetimeManager())
-                .RegisterInstance<ISessionStateService>(SessionStateService, new ContainerControlledLifetimeManager())
-                .RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager())
+            _unityContainer.RegisterInstance(NavigationService, new ContainerControlledLifetimeManager())
+                .RegisterInstance(SessionStateService, new ContainerControlledLifetimeManager())
+                .RegisterInstance<ITheTvdbManager>(new TheTvdbManager(Constants.ApiKey))
                 .RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()), new ContainerControlledLifetimeManager())
+                .RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager())
                 .RegisterType<ISettingsService, SettingsService>(new ContainerControlledLifetimeManager())
                 .RegisterType<IAlertMessageService, AlertMessageService>(new ContainerControlledLifetimeManager())
-                .RegisterInstance<ILogManager>(LogManagerFactory.DefaultLogManager, new ContainerControlledLifetimeManager())
+                .RegisterInstance(LogManagerFactory.DefaultLogManager, new ContainerControlledLifetimeManager())
                 .RegisterType<ISeriesRepository, SeriesRepository>(new ContainerControlledLifetimeManager())
                 .RegisterType<IBannerRepository, BannerRepository>(new ContainerControlledLifetimeManager())
-                .RegisterInstance<ITheTvdbManager>(new TheTvdbManager("<< ENTER API KEY >>"))
                 .RegisterType<SearchPageViewModel>(new ContainerControlledLifetimeManager())
                 .RegisterType<MainPageViewModel>(new ContainerControlledLifetimeManager())
                 .RegisterType<SettingsPageViewModel>(new ContainerControlledLifetimeManager())

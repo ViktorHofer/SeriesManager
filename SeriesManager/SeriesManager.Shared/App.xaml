@@ -1,10 +1,9 @@
-﻿<prism:SplashOptimizedMvvmAppBase
+﻿<local:SplashOptimizedMvvmAppBase
     x:Class="SeriesManager.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:uniconverter="using:UniRock.Converters"
-    xmlns:prism="using:Microsoft.Practices.Prism.Mvvm"
-    xmlns:system="using:System">
+    xmlns:local="using:SeriesManager">
 
     <Application.Resources>
         <ResourceDictionary>
@@ -24,4 +23,4 @@
         </ResourceDictionary>
     </Application.Resources>
     
-</prism:SplashOptimizedMvvmAppBase>
+</local:SplashOptimizedMvvmAppBase>

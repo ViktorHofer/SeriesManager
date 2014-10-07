@@ -59,6 +59,8 @@ namespace SeriesManager
 
         protected override async Task OnInitializeAsync(IActivatedEventArgs args, Frame rootFrame)
         {
+            if (string.IsNullOrWhiteSpace(Constants.ApiKey)) throw new Exception("API KEY NEEDS TO BE SET FIRST in Constants.cs");
+
             ViewModelLocationProvider.SetDefaultViewTypeToViewModelTypeResolver(viewType =>
             {
                 var viewModelTypeName = string.Format(CultureInfo.InvariantCulture, "SeriesManager.UILogic.ViewModels.{0}ViewModel, SeriesManager.UILogic, Version=1.0.0.0, Culture=neutral", viewType.Name);

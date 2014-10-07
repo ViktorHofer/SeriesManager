@@ -6,12 +6,15 @@
     /// </summary>
     partial class Constants
     {
+        // Do not write the api key directly inside the quotes or otherwise your api key will be pushed too
+        // while commiting to the repository (github). Do as described below!!!
         internal static readonly string ApiKey = "";
     }
 }
 
-// Second example part of partial class
-// File must have the following name: *.Secret.cs or *.secret.cs (git ignores all files with that suffix)
+
+// 1. Create a file called Constants.Secret.cs inside the root of SeriesManager.Shared
+// 2. Paste the following code inside the file:
 
 //namespace SeriesManager
 //{
@@ -23,3 +26,7 @@
 //        }
 //    }
 //}
+
+// 3. Git will automatically ignore this file because .gitignore contains a rule 
+//    for all files with following names: *.[Ss]ecret.cs
+// 4. Have fun ;-)

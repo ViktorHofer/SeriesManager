@@ -1,5 +1,5 @@
-﻿
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+
 namespace SeriesManager.UILogic.Repositories
 {
     public interface IBannerRepository

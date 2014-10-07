@@ -13,10 +13,14 @@ namespace SeriesManager.UILogic.Repositories
 {
     public class SeriesRepository : ISeriesRepository
     {
+        #region Fields
+
         private readonly IStorageService _storageService;
         private readonly ITheTvdbManager _theTvdbManager;
         private readonly ISettingsService _settingsService;
         private HashSet<Series> _favorites;
+
+        #endregion
 
         #region Constructor
 
@@ -46,6 +50,8 @@ namespace SeriesManager.UILogic.Repositories
 
         public async Task<IReadOnlyCollection<Series>> SearchAsync(string searchQuery)
         {
+            if (searchQuery == null) throw new ArgumentNullException("searchQuery");
+
             // Search web request to api; result can be null
             var searchResult = await _theTvdbManager.SearchSeries(searchQuery, _settingsService.SelectedLanguage);
 
@@ -59,26 +65,29 @@ namespace SeriesManager.UILogic.Repositories
 
         public async Task<Series> GetSeriesAsync(uint seriesId)
         {
+            // Check if series is already cached (hashed) in memory and retrieve it.
             if (_favorites != null)
             {
                 var favorite = _favorites.FirstOrDefault(fav => fav.Id == seriesId);
                 if (favorite != null) return favorite;
             }
 
+            // If series is already in the local storage use it
             var series = await _storageService.GetSeriesAsync(seriesId);
-            if (series == null)
-            {
-                series = await _theTvdbManager.GetSeries(seriesId, _settingsService.SelectedLanguage);
-                await _storageService.SaveSeriesAsync(series);
-            }
+            if (series != null) return series;
 
+            // Otherwise series need to be retrieved and cached locally
+            series = await _theTvdbManager.GetSeries(seriesId, _settingsService.SelectedLanguage);
+            await _storageService.SaveSeriesAsync(series);
             return series;
         }
 
         public async Task LoadFavoritesAsync()
         {
+            // Retrieve all favorized series ids from local roaming cache
             var favoriteIds = await _storageService.GetFavoritesAsync();
 
+            // Get all series data from the ids
             var tasks = favoriteIds
                 .Select(favoriteId => Task.Run(async () => await GetSeriesAsync(favoriteId)))
                 .ToArray();
@@ -89,15 +98,14 @@ namespace SeriesManager.UILogic.Repositories
                 .Select(task => task.Result)
                 .ToArray();
 
+            // Store all favorized series inside a local memory cache (hashset)
             _favorites = new HashSet<Series>(array);
         }
 
         public async Task ChangeFavoriteAsync(Series series, bool isFavorite)
         {
-            if (Favorites == null)
-            {
-                throw new InvalidOperationException("Favorite collection cannot be null. Call LoadFavorites method first.");
-            }
+            if (series == null) throw new ArgumentNullException("series");
+            if (Favorites == null) throw new InvalidOperationException("Favorite collection cannot be null. Call LoadFavorites method first.");
 
             if (isFavorite)
             {
@@ -120,6 +128,7 @@ namespace SeriesManager.UILogic.Repositories
 
         public async Task<bool> IsFavoriteAsync(uint seriesId)
         {
+            // Check if series is already favorized
             return await _storageService.IsSeriesFavoriteAsync(seriesId);
         }
 

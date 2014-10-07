@@ -1,27 +1,27 @@
-﻿using System.ComponentModel;
-using TheTVDBSharp.Models;
+﻿using TheTVDBSharp.Models;
 using Windows.Storage;
 using System.Linq;
 using System;
-using System.Runtime.CompilerServices;
+using UniRock;
 
 namespace SeriesManager.UILogic.Services
 {
     public class SettingsService : ISettingsService
     {
+        #region Fields
+
         private const string SelectLanguageKey = "selected-language";
         private const string HideNonImageSearchResultsKey = "hide-non-image-search-results";
         private readonly ApplicationDataContainer _applicationData = ApplicationData.Current.RoamingSettings;
         private Language _selectedLanguage;
         private bool _hideNonImageSearchResults;
 
-        #region INotifyPropertyChanged
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
         #endregion
 
         #region ISettingsService
+
+        public event EventHandler<EventArgs> SelectedLanguageChanged;
+        public event EventHandler<EventArgs> HideNonImageSearchResultsChanged;
 
         public Language SelectedLanguage
         {
@@ -32,7 +32,7 @@ namespace SeriesManager.UILogic.Services
 
                 _applicationData.Values[SelectLanguageKey] = value.ToString();
                 _selectedLanguage = value;
-                OnPropertyChanged();
+                SelectedLanguageChanged.Raise(this);
             }
         }
 
@@ -45,7 +45,7 @@ namespace SeriesManager.UILogic.Services
 
                 _applicationData.Values[HideNonImageSearchResultsKey] = value;
                 _hideNonImageSearchResults = value;
-                OnPropertyChanged();
+                HideNonImageSearchResultsChanged.Raise(this);
             }
         }
 
@@ -82,13 +82,5 @@ namespace SeriesManager.UILogic.Services
         }
 
         #endregion
-
-        private void OnPropertyChanged([CallerMemberName] String propertyName = null)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
     }
 }

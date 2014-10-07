@@ -64,21 +64,14 @@ namespace SeriesManager.UILogic.ViewModels
 
             _settingsService = settingsService;
             _seriesRepository = seriesRepository;
-            _settingsService.PropertyChanged += async (s, e) => 
+            _settingsService.SelectedLanguageChanged += async (s, e) =>
             {
-                switch (e.PropertyName)
-                {
-                    case "SelectedLanguage":
-                        OnPropertyChanged(() => SelectedLanguage);
-                        IsSeriesLanguagesUpdating = true;
-                        await _seriesRepository.UpdateFavoriteLanguagesAsync(_settingsService.SelectedLanguage);
-                        IsSeriesLanguagesUpdating = false;
-                        break;
-                    case "HideNonImageSearchResults":
-                        OnPropertyChanged(() => HideNonImageSearchResults);
-                        break;
-                }
+                OnPropertyChanged(() => SelectedLanguage);
+                IsSeriesLanguagesUpdating = true;
+                await _seriesRepository.UpdateFavoriteLanguagesAsync(_settingsService.SelectedLanguage);
+                IsSeriesLanguagesUpdating = false;
             };
+            _settingsService.HideNonImageSearchResultsChanged += (s, e) => OnPropertyChanged(() => HideNonImageSearchResults);
         }
 
         #endregion

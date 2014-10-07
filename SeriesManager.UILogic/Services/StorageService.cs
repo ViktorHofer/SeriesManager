@@ -11,8 +11,14 @@ namespace SeriesManager.UILogic.Services
 {
     public class StorageService : IStorageService
     {
+        #region Fields
+
         private readonly Lazy<SQLiteAsyncConnection> _localDb = new Lazy<SQLiteAsyncConnection>(() => new SQLiteAsyncConnection("series.sqlite"));
         private readonly Lazy<SQLiteAsyncConnection> _roamingDb = new Lazy<SQLiteAsyncConnection>(() => new SQLiteAsyncConnection(ApplicationData.Current.RoamingFolder.Path + "\\series.sqlite"));
+
+        #endregion
+
+        #region Properties
 
         private SQLiteAsyncConnection LocalDb 
         { 
@@ -24,8 +30,13 @@ namespace SeriesManager.UILogic.Services
             get { return _roamingDb.Value; } 
         }
 
+        #endregion
+
         #region Constructor
 
+        /// <summary>
+        /// Hide constructor, only allow creation with asynchronous "constructor"
+        /// </summary>
         private StorageService()
         {
         }

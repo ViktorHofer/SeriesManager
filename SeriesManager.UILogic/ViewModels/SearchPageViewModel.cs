@@ -194,7 +194,8 @@ namespace SeriesManager.UILogic.ViewModels
         {
             // Subscribe to event which invokes when the user changes app settings like the prefered series language or if search results without an image should be shown.
             // If one of these settings change the active search results will be updated with the new settings.
-            _settingsService.PropertyChanged += settingsService_PropertyChanged;
+            _settingsService.SelectedLanguageChanged += OnSettingsServiceOnSelectedLanguageChanged;
+            _settingsService.HideNonImageSearchResultsChanged += OnSettingsServiceOnHideNonImageSearchResultsChanged;
 
             var searchQuery = navigationParameter as string;
             if (!string.IsNullOrWhiteSpace(searchQuery) && (!string.Equals(SearchQuery, searchQuery, StringComparison.OrdinalIgnoreCase) || navigationMode == NavigationMode.Refresh))
@@ -219,7 +220,8 @@ namespace SeriesManager.UILogic.ViewModels
         public override void OnNavigatedFrom(Dictionary<string, object> viewModelState, bool suspending)
         {
             // Unsubscribe user setting changes
-            _settingsService.PropertyChanged -= settingsService_PropertyChanged;
+            _settingsService.SelectedLanguageChanged -= OnSettingsServiceOnSelectedLanguageChanged;
+            _settingsService.HideNonImageSearchResultsChanged -= OnSettingsServiceOnHideNonImageSearchResultsChanged;
 
             // Save selected series
             if (_selectedItem != null)
@@ -232,7 +234,17 @@ namespace SeriesManager.UILogic.ViewModels
 
         #endregion
 
-        private async void settingsService_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private async void OnSettingsServiceOnHideNonImageSearchResultsChanged(object s, EventArgs e)
+        {
+            await UpdateSearchResults();
+        }
+
+        private async void OnSettingsServiceOnSelectedLanguageChanged(object s, EventArgs e)
+        {
+            await UpdateSearchResults();
+        }
+
+        private async Task UpdateSearchResults()
         {
             // If search cannot perform again return
             if (string.IsNullOrWhiteSpace(_searchQuery)) return;
